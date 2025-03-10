@@ -1,14 +1,16 @@
-// @desc: Nothing in the description yet
-
 using AccessTrackAPI.Data;
 using Microsoft.EntityFrameworkCore;
+
+// @desc: Nothing in the description yet
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AccessControlContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddOpenApi();
+// Add services for controllers
+builder.Services.AddControllers();
+builder.Services.AddOpenApi(); // Swagger (later)
 
 var app = builder.Build();
 
@@ -18,8 +20,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// app.UseHttpsRedirection();
+// Map controller routes
+app.MapControllers();
 
-app.MapGet("/", () => "Bem-vindo à API AccessTrack!");
+// app.UseHttpsRedirection();
 
 app.Run();
