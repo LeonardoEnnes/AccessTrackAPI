@@ -1,6 +1,8 @@
 using AccessTrackAPI.Data;
 using AccessTrackAPI.Models;
+using AccessTrackAPI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SecureIdentity.Password;
 
 namespace AccessTrackAPI.Controllers;
@@ -27,28 +29,27 @@ public class UsersController : ControllerBase
         
         var password = PasswordGenerator.Generate(25);
         newUser.PasswordHash = PasswordHasher.Hash(password);
-            
+
         try
         {
-            var newUser = new Users
-            {
-                Name = user.Name,
-                Email = user.Email,
-                Role = user.Role
-            };
-
             // Add the user to the database
             await context.Users.AddAsync(newUser);
             await context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(Post), new { id = newUser.Id }, new { newUser });
+            return Ok(new ResultViewModel<dynamic>(new
+            {
+                user = newUser // user.Email, password (just this)
+            }));
         }
-        catch (Exception e)
+        catch (DbUpdateException ex)
         {
-            Console.WriteLine(e);
-            Console.WriteLine(e.InnerException?.Message);
-            return StatusCode(500, "An error occurred while saving the user.");
+            Console.WriteLine(ex.InnerException?.Message);
+            return StatusCode(400, new ResultViewModel<string>("01x00 - Email already in use."));
+        }
+        catch
+        {
+            return StatusCode(400, new ResultViewModel<string>("00x00 - Internal Server Error."));
         }
     }
-
+    
 }
