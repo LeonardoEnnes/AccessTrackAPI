@@ -1,6 +1,7 @@
 using AccessTrackAPI.Data;
 using AccessTrackAPI.Models;
 using Microsoft.AspNetCore.Mvc;
+using SecureIdentity.Password;
 
 namespace AccessTrackAPI.Controllers;
 
@@ -17,6 +18,16 @@ public class UsersController : ControllerBase
         if (user == null)
             return BadRequest("User data is required.");
 
+        var newUser = new Users
+        {
+            Name = user.Name,
+            Email = user.Email,
+            Role = user.Role
+        };
+        
+        var password = PasswordGenerator.Generate(25);
+        newUser.PasswordHash = PasswordHasher.Hash(password);
+            
         try
         {
             var newUser = new Users
@@ -30,7 +41,7 @@ public class UsersController : ControllerBase
             await context.Users.AddAsync(newUser);
             await context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(Post), new { id = newUser.Id }, newUser);
+            return CreatedAtAction(nameof(Post), new { id = newUser.Id }, new { newUser });
         }
         catch (Exception e)
         {
