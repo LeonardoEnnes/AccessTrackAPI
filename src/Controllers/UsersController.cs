@@ -19,10 +19,18 @@ public class UsersController : ControllerBase
 
         try
         {
-            await context.Users.AddAsync(user);
+            var newUser = new Users
+            {
+                Name = user.Name,
+                Email = user.Email,
+                Role = user.Role
+            };
+
+            // Add the user to the database
+            await context.Users.AddAsync(newUser);
             await context.SaveChangesAsync();
-            
-            return CreatedAtAction(nameof(Post), new { id = user.Id }, user);
+
+            return CreatedAtAction(nameof(Post), new { id = newUser.Id }, newUser);
         }
         catch (Exception e)
         {
