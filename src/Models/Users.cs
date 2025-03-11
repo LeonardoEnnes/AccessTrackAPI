@@ -9,5 +9,4 @@ public class Users
     
     // Empty Lists (for now) => Change it afterwards
     public ICollection<EntryExitLogs> EntryExitLogs { get; set; } = new List<EntryExitLogs>();  
-    public ICollection<QrCodes> QrCodes { get; set; } = new List<QrCodes>(); 
 }

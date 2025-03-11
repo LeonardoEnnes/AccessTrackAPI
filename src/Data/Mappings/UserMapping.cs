@@ -31,10 +31,6 @@ public class UserMapping : IEntityTypeConfiguration<Users>
             .WithOne(e => e.User)
             .HasForeignKey(e => e.UserId)
             .OnDelete(DeleteBehavior.Cascade); // A user can have many EntryExitLogs
-
-        builder.HasMany(u => u.QrCodes)
-            .WithOne(q => q.User)
-            .HasForeignKey(q => q.UserId)
-            .OnDelete(DeleteBehavior.Cascade); // A user can have many QR codes
+        
     }
 }
