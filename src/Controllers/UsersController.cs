@@ -1,6 +1,7 @@
 using AccessTrackAPI.Data;
 using AccessTrackAPI.Models;
 using AccessTrackAPI.ViewModels;
+using AccessTrackAPI.ViewModels.Accounts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SecureIdentity.Password;
@@ -13,17 +14,17 @@ public class UsersController : ControllerBase
 {
     [HttpPost("v1/Users/")]
     public async Task<ActionResult> Post(
-        [FromBody] Users user,
+        [FromBody] RegisterViewModel model,
         [FromServices] AccessControlContext context)
     {
 
-        if (user == null)
+        if (model == null)
             return BadRequest("User data is required.");
 
         var newUser = new Users
         {
-            Name = user.Name,
-            Email = user.Email,
+            Name = model.Name,
+            Email = model.Email,
             Role = "user"
         };
         
