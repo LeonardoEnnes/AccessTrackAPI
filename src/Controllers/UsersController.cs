@@ -24,7 +24,7 @@ public class UsersController : ControllerBase
         {
             Name = user.Name,
             Email = user.Email,
-            Role = user.Role
+            Role = "user"
         };
         
         var password = PasswordGenerator.Generate(25);
