@@ -3,6 +3,7 @@ using AccessTrackAPI.Models;
 using AccessTrackAPI.Services;
 using AccessTrackAPI.ViewModels;
 using AccessTrackAPI.ViewModels.Accounts;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SecureIdentity.Password;
@@ -22,15 +23,16 @@ public class UsersController : ControllerBase
         if (model == null)
             return BadRequest("User data is required.");
 
+        
+        var passwordHash = PasswordHasher.Hash(model.Password);
+        
         var newUser = new Users
         {
             Name = model.Name,
             Email = model.Email,
+            PasswordHash = passwordHash,
             Role = "user"
         };
-        
-        var password = PasswordGenerator.Generate(25);
-        newUser.PasswordHash = PasswordHasher.Hash(password);
 
         try
         {
@@ -40,7 +42,8 @@ public class UsersController : ControllerBase
 
             return Ok(new ResultViewModel<dynamic>(new
             {
-                user = newUser.Email, password // user.Email, password (just this)
+                user = newUser.Email,
+                password = model.Password // Return the user-provided password (just for now)
             }));
         }
         catch (DbUpdateException ex)
