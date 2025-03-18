@@ -19,6 +19,9 @@ builder.Services.AddOpenApi(); // Swagger (later)
 // Registre o TokenService
 builder.Services.AddTransient<TokenService>(); 
 
+// Load the JWT key from configuration
+Configuration.JwtKey = builder.Configuration["JwtKey"];
+
 // Configuração da autenticação JWT
 var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);
 builder.Services.AddAuthentication(x =>
@@ -41,6 +44,9 @@ builder.Services.AddMemoryCache();
 var app = builder.Build();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// checking the keys (remove later)
+Console.WriteLine($"JWT Key: {Configuration.JwtKey}");
 Console.WriteLine($"Connection String: {connectionString}");
 
 // Configure the HTTP request pipeline.

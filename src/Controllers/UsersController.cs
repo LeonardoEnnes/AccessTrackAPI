@@ -3,14 +3,12 @@ using AccessTrackAPI.Models;
 using AccessTrackAPI.Services;
 using AccessTrackAPI.ViewModels;
 using AccessTrackAPI.ViewModels.Accounts;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SecureIdentity.Password;
 
 namespace AccessTrackAPI.Controllers;
 
-// CRUD
 [ApiController]
 public class UsersController : ControllerBase
 {
@@ -43,7 +41,8 @@ public class UsersController : ControllerBase
             return Ok(new ResultViewModel<dynamic>(new
             {
                 user = newUser.Email,
-                password = model.Password // Return the user-provided password (just for now)
+                password = model.Password, // Return the user-provided password (just for now)
+                message = "Account created successfully."
             }));
         }
         catch (DbUpdateException ex)
@@ -56,7 +55,6 @@ public class UsersController : ControllerBase
             return StatusCode(400, new ResultViewModel<string>("00x00 - Internal Server Error."));
         }
     }
-
 
     [HttpPost("v1/Users/login")]
     public async Task<ActionResult> Login(
