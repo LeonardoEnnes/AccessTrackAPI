@@ -1,13 +1,14 @@
 using System.Text;
 using AccessTrackAPI;
 using AccessTrackAPI.Data;
-using AccessTrackAPI.Services; // Certifique-se de adicionar o namespace correto
+using AccessTrackAPI.Services; 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure DbContext with the connection string from configuration
 builder.Services.AddDbContext<AccessControlContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -39,9 +40,13 @@ builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+Console.WriteLine($"Connection String: {connectionString}");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    builder.Configuration.AddUserSecrets<Program>();
     Console.WriteLine("Development Environment");
     // app.MapOpenApi();
 }
