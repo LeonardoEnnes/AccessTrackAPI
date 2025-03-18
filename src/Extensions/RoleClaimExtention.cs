@@ -9,12 +9,9 @@ public static class RoleClaimExtention
     {
         var result = new List<Claim>
         {
-            new(ClaimTypes.Name, user.Email) // esse item vira User.Identity.Name
+            new(ClaimTypes.Name, user.Email), 
+            new(ClaimTypes.Role, user.Role)
         };
-        
-        result.AddRange(
-            user.Role.Select(role => new Claim(ClaimTypes.Role, role.ToString()))
-        );
         
         return result;
     }
