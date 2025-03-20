@@ -12,10 +12,13 @@ public class AccessControlContext : DbContext
 
     public DbSet<Users> Users { get; set; }
     public DbSet<EntryExitLogs> EntryExitLogs { get; set; }
+    
+    public DbSet<Admins> Admins { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UserMapping());
         modelBuilder.ApplyConfiguration(new EntryExitLogMapping());
+        modelBuilder.ApplyConfiguration(new AdminMapping());
     }
 }
