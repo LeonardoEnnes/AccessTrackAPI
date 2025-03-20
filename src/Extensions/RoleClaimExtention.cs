@@ -15,4 +15,16 @@ public static class RoleClaimExtention
         
         return result;
     }
+    
+    // Método de extensão para Admins
+    public static IEnumerable<Claim> GetClaims(this Admins admin)
+    {
+        var result = new List<Claim>
+        {
+            new(ClaimTypes.Name, admin.Email), 
+            new(ClaimTypes.Role, admin.Role)
+        };
+
+        return result;
+    }
 }

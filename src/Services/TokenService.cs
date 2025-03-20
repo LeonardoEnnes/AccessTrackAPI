@@ -9,7 +9,7 @@ namespace AccessTrackAPI.Services;
 
 public class TokenService
 {
-    public string GenerateToken(Users user)
+    public string GenerateToken(IEnumerable<Claim> claims)
     {
         // Cria um manipulador de tokens JWT
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -17,18 +17,13 @@ public class TokenService
         // Obtém a chave secreta do JWT a partir da configuração
         var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);
 
-        // colocar em outro arquivo??
-        // Cria uma lista de claims com base no Usuario
-        var claims = user.GetClaims();
-
         // configura o token
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims), // Define as classes
-            Expires = DateTime.UtcNow.AddHours(9), // Define a expiração do token
+            Expires = DateTime.UtcNow.AddHours(9), // Define a expiração do Token
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature) // define as credenciais de assinatura 
-
         };
         
         // Gera o Token
