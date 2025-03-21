@@ -141,4 +141,49 @@ public class AdminController : ControllerBase
         }
     }
     
+    // @desc: update Users from the system
+    [HttpPut("v1/Admin/UpdateUser/{id}")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> UpdateUser(
+        [FromRoute] int id,
+        [FromBody] RegisterViewModel model,
+        [FromServices] AccessControlContext context)
+    {
+        try
+        {
+            // Find the user by Id
+            var user = await context
+                .Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user == null)
+                return BadRequest(new ResultViewModel<string>("User not found."));
+            
+            // Update user properties
+            user.Name = model.Name;
+            user.Email = model.Email;
+            
+            // Hash the new password if provided
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                user.PasswordHash = PasswordHasher.Hash(model.Password);
+            }
+            
+            context.Users.Update(user);
+            await context.SaveChangesAsync();
+            
+            return Ok(new ResultViewModel<dynamic>($"User {id} updated successfully."));
+        }
+        catch (DbUpdateException ex)
+        {
+            Console.WriteLine(ex.InnerException?.Message);
+            return StatusCode(400, new ResultViewModel<string>("00x10 - DatabseUpdate Error."));
+        }
+        catch
+        {
+            return BadRequest(new ResultViewModel<string>("00x00 - Internal Server Error."));
+        }
+    }
+    
 }
