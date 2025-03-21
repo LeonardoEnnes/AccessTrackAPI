@@ -1,4 +1,5 @@
 using AccessTrackAPI.Data;
+using AccessTrackAPI.Extensions;
 using AccessTrackAPI.Models;
 using AccessTrackAPI.Services;
 using AccessTrackAPI.ViewModels;
@@ -12,6 +13,7 @@ namespace AccessTrackAPI.Controllers;
 [ApiController]
 public class UsersController : ControllerBase
 {
+    //Note: Shouldn't it be an admin to let a user be created? (think abt it)
     [HttpPost("v1/Users/")]
     public async Task<ActionResult> Post(
         [FromBody] RegisterViewModel model,
@@ -20,7 +22,6 @@ public class UsersController : ControllerBase
 
         if (model == null)
             return BadRequest("User data is required.");
-
         
         var passwordHash = PasswordHasher.Hash(model.Password);
         
@@ -56,6 +57,7 @@ public class UsersController : ControllerBase
         }
     }
 
+    // @desc: Login is responsible to enter in the system and see all the info, entry and exit logs from the user itself. 
     [HttpPost("v1/Users/login")]
     public async Task<ActionResult> Login(
         [FromBody] LoginViewModel model,
@@ -78,8 +80,12 @@ public class UsersController : ControllerBase
 
         try
         {
-            var token = tokenService.GenerateToken(user);
-            return Ok(new ResultViewModel<string>(token, null)); // passando nul para ele n entender como erro
+            // Generate the user Claims
+            var claims = user.GetClaims();
+            
+            var token = tokenService.GenerateToken(claims);
+            // here show a list of entry/exit logs 
+            return Ok(new ResultViewModel<string>(token, null)); // Null is required 
         }
         catch (Exception e)
         {

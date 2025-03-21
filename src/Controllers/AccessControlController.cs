@@ -53,7 +53,7 @@ public class AccessControlController : ControllerBase
         catch (DbUpdateException ex)
         {
             Console.WriteLine(ex.InnerException?.Message);
-            return StatusCode(400, new ResultViewModel<string>("01x00 - Database Error."));
+            return StatusCode(400, new ResultViewModel<string>("00x10 - Database Update Error."));
         }
         catch
         {

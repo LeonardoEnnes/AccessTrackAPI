@@ -1,5 +1,7 @@
 using AccessTrackAPI.Data;
+using AccessTrackAPI.Extensions;
 using AccessTrackAPI.Models;
+using AccessTrackAPI.Services;
 using AccessTrackAPI.ViewModels;
 using AccessTrackAPI.ViewModels.Accounts;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +13,6 @@ namespace AccessTrackAPI.Controllers;
 [ApiController]
 public class AdminController : ControllerBase
 {
-
     [HttpPost("v1/Admin/CreateAdmin")]
     public async Task<IActionResult> CreationAdmin(
         [FromBody] RegisterViewModel model,
@@ -21,7 +22,8 @@ public class AdminController : ControllerBase
             return BadRequest(new ResultViewModel<string>("Admin data required."));
 
         // verify is there's an admin with the same email in the Database
-        var existingAdmin = await context.Admins
+        var existingAdmin = await context
+            .Admins
             .AsNoTracking()
             .FirstOrDefaultAsync(a => a.Email == model.Email);
 
@@ -49,6 +51,7 @@ public class AdminController : ControllerBase
             return Ok(new ResultViewModel<dynamic>(new
             {
                 admin = newAdmin,
+                password = model.Password,  // Return the user-provided password (just for now)
                 message = "Admin created successfully."
             }));
 
@@ -63,4 +66,43 @@ public class AdminController : ControllerBase
             return BadRequest(new ResultViewModel<string>("00x00 - internal server error."));
         }
     }
+    
+    // @desc: Logging the admin in the system thus returning an JWT Token that is going to be used in other operations in the system
+    [HttpPost("v1/Admin/LoginAdmin")]
+    public async Task<IActionResult> LoginAdmin(
+        [FromBody] LoginViewModel model,
+        [FromServices] AccessControlContext context,
+        [FromServices] TokenService tokenService)
+    {
+        if(!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<string>("00x00 - Internal Server Error."));
+        
+        // Searching the admin in the system
+        var admin = await context
+            .Admins
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.Email == model.Email);
+
+        if (admin == null)
+            return BadRequest(new ResultViewModel<string>("Username or password is incorrect."));
+
+        if (!PasswordHasher.Verify(admin.PasswordHash, model.Password))
+            return BadRequest(new ResultViewModel<string>("Username or password is incorrect."));
+
+        try
+        {
+            // Generate admin claim
+            var claims = admin.GetClaims();
+            
+            var token = tokenService.GenerateToken(claims);
+            
+            return Ok(new ResultViewModel<string>(token, null)); 
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(400, new ResultViewModel<string>("00x00 - Internal Server Error."));
+        }
+    }
+    
 }
