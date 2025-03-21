@@ -4,6 +4,7 @@ using AccessTrackAPI.Models;
 using AccessTrackAPI.Services;
 using AccessTrackAPI.ViewModels;
 using AccessTrackAPI.ViewModels.Accounts;
+using AccessTrackAPI.ViewModels.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -186,4 +187,45 @@ public class AdminController : ControllerBase
         }
     }
     
+    // @desc: Get logs/info of one or many users in the system 
+    [HttpGet("v1/Admin/UserLogs/{userId?}")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> GetUserLogs(
+        [FromRoute] int? userId,
+        [FromServices] AccessControlContext context)
+    {
+        try
+        {
+            // Log the userId for debugging
+            Console.WriteLine($"Received userId: {userId}");
+            
+            IQueryable<EntryExitLogs> query = context
+                .EntryExitLogs
+                .AsNoTracking()
+                .Include(log => log.User);
+
+            if (userId.HasValue)
+                query = query.Where(log => log.UserId == userId); // fetching logs for a specific user
+
+
+            var logs = await query.Select(log => new EntryExitLogsDto
+            {
+                Id = log.Id,
+                ExitTime = log.ExitTime,
+                EntryTime = log.EntryTime,
+                UserId = log.UserId,
+                UserName = log.User.Name
+            }).ToListAsync();
+
+            if (logs == null || !logs.Any())
+                return NotFound(new ResultViewModel<string>("No logs found."));
+            
+            return Ok(new ResultViewModel<List<EntryExitLogsDto>>(logs));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return StatusCode(500, new ResultViewModel<string>("00x00 - Internal Server Error."));
+        }
+    }
 }
