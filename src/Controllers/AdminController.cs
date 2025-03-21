@@ -196,9 +196,6 @@ public class AdminController : ControllerBase
     {
         try
         {
-            // Log the userId for debugging
-            Console.WriteLine($"Received userId: {userId}");
-            
             IQueryable<EntryExitLogs> query = context
                 .EntryExitLogs
                 .AsNoTracking()
