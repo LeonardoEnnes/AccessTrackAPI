@@ -1,9 +1,12 @@
+using System.Security.Claims;
 using AccessTrackAPI.Data;
 using AccessTrackAPI.Extensions;
 using AccessTrackAPI.Models;
 using AccessTrackAPI.Services;
 using AccessTrackAPI.ViewModels;
 using AccessTrackAPI.ViewModels.Accounts;
+using AccessTrackAPI.ViewModels.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SecureIdentity.Password;
@@ -13,7 +16,6 @@ namespace AccessTrackAPI.Controllers;
 [ApiController]
 public class UsersController : ControllerBase
 {
-    //Note: Shouldn't it be an admin to let a user be created? (think abt it)
     [HttpPost("v1/Users/")]
     public async Task<ActionResult> Post(
         [FromBody] RegisterViewModel model,
@@ -57,7 +59,7 @@ public class UsersController : ControllerBase
         }
     }
 
-    // @desc: Login is responsible to enter in the system and see all the info, entry and exit logs from the user itself. 
+    // @desc: Login is responsible to enter in the system  
     [HttpPost("v1/Users/login")]
     public async Task<ActionResult> Login(
         [FromBody] LoginViewModel model,
@@ -93,4 +95,65 @@ public class UsersController : ControllerBase
             return StatusCode(400, new ResultViewModel<string>("00x00 - Internal Server Error."));
         }
     }
+    
+    //@desc: This route is responsible for showing the Logs and infos of the user logged
+    [HttpGet("v1/Users/infos")]
+    [Authorize] // only the user can access
+    public async Task<ActionResult> GetUserInfo(
+        [FromServices] AccessControlContext context)
+    {
+        var userEmail = User.FindFirst(ClaimTypes.Name)?.Value; // get email from the token
+        
+        if (userEmail == null)
+        {
+            Console.WriteLine("Email not found in token.");
+            return BadRequest(new ResultViewModel<string>("User not found."));
+        }
+
+        Console.WriteLine($"Email from token: {userEmail}");
+        
+        try
+        {
+            // Searching for the users and logs in the database in system
+            var user = await context
+                .Users
+                .AsNoTracking()
+                .Include(u => u.EntryExitLogs)
+                .FirstOrDefaultAsync(u => u.Email == userEmail);
+            
+            if(user == null)
+            {
+                Console.WriteLine($"User with email {userEmail} not found in database.");
+                return BadRequest(new ResultViewModel<string>("User not found."));
+            }
+            
+            // Mapping logs to the DTO
+            var logsDto = user.EntryExitLogs
+                .Select(log => new EntryExitLogsDto
+                {
+                    Id = log.Id,
+                    EntryTime = log.EntryTime,
+                    ExitTime = log.ExitTime,
+                    UserId = log.UserId,
+                    UserName = user.Name // Username associated to the log
+                })
+                .ToList();
+            
+            // Create response object
+            var userInfo = new
+            {
+                Email = user.Email,
+                Name = user.Name,
+                Logs = logsDto
+            };
+            
+            return Ok(new ResultViewModel<object>(userInfo));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(400, new ResultViewModel<string>("00x00 - Internal Server Error."));
+        }
+    }
+    
 }
