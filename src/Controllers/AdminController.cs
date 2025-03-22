@@ -86,10 +86,10 @@ public class AdminController : ControllerBase
             .FirstOrDefaultAsync(a => a.Email == model.Email);
 
         if (admin == null)
-            return BadRequest(new ResultViewModel<string>("Username or password is incorrect."));
+            return BadRequest(new ResultViewModel<string>("Email or password is incorrect."));
 
         if (!PasswordHasher.Verify(admin.PasswordHash, model.Password))
-            return BadRequest(new ResultViewModel<string>("Username or password is incorrect."));
+            return BadRequest(new ResultViewModel<string>("Email or password is incorrect."));
 
         try
         {
