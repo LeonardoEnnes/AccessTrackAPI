@@ -69,6 +69,57 @@ public class AdminController : ControllerBase
         }
     }
     
+    // @desc: This route is only dedicated for creating the first admin in the system
+    [HttpPost("v1/Admin/CreateFirstAdmin")]
+    public async Task<IActionResult> CreateFirstAdmin(
+        [FromBody] RegisterViewModel model,
+        [FromServices] AccessControlContext context)
+    {
+        if (model == null)
+            return BadRequest(new ResultViewModel<string>("Admin data required."));
+        
+        // verify if an admin already exists in the database
+        var anyAdmin = await context.
+            Admins
+            .AsNoTracking()
+            .AnyAsync();
+        
+        if(anyAdmin)
+            return BadRequest(new ResultViewModel<string>("Admin already exists."));
+        
+        var passwordHash = PasswordHasher.Hash(model.Password);
+
+        var newAdmin = new Admins
+        {
+            Email = model.Email,
+            PasswordHash = passwordHash,
+            Name = model.Name,
+            Role = "admin"
+        };
+
+        try
+        {
+            await context.Admins.AddAsync(newAdmin);
+            await context.SaveChangesAsync();
+            
+            return Ok(new ResultViewModel<dynamic>( new
+            {
+                admin = newAdmin,
+                password = model.Password, // remove this latter 
+                message = "Admin created successfully."
+            }));
+        }
+        catch (DbUpdateException ex)
+        {
+            Console.WriteLine(ex.InnerException?.Message);
+            return StatusCode(400, new ResultViewModel<string>("00x10 - Database Update Error."));
+        }
+        catch
+        {
+            return BadRequest(new ResultViewModel<string>("00x00 - internal server error."));
+        }
+    }
+    
     // @desc: Logging the admin in the system thus returning an JWT Token that is going to be used in other operations in the system
     [HttpPost("v1/Admin/LoginAdmin")]
     public async Task<IActionResult> LoginAdmin(
