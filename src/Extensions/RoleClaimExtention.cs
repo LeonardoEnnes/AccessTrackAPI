@@ -22,7 +22,8 @@ public static class RoleClaimExtention
         var result = new List<Claim>
         {
             new(ClaimTypes.Name, admin.Email), 
-            new(ClaimTypes.Role, admin.Role)
+            new(ClaimTypes.Role, admin.Role),
+            new("IsRoot", admin.IsRoot.ToString())
         };
 
         return result;
