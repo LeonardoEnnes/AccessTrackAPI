@@ -29,6 +29,10 @@ public class AdminMapping : IEntityTypeConfiguration<Admins>
             .HasColumnType("VARCHAR")
             .HasMaxLength(255);
         
+        builder.Property(a => a.IsRoot)
+            .IsRequired()
+            .HasDefaultValue(false);
+        
         // Indexes
         builder.HasIndex(a => a.Email)
             .IsUnique(); // Ensure the email is unique
