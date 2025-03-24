@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
+// adjust the program later 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure DbContext with the connection string from configuration
@@ -38,6 +40,9 @@ builder.Services.AddAuthentication(x =>
         ValidateAudience = false
     };
 });
+
+// Registrar IHttpContextAccessor
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddMemoryCache();
 

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AccessTrackAPI.Data;
 using AccessTrackAPI.Extensions;
 using AccessTrackAPI.Models;
@@ -15,6 +16,7 @@ namespace AccessTrackAPI.Controllers;
 [ApiController]
 public class AdminController : ControllerBase
 {
+    // put an admin auth here later
     [HttpPost("v1/Admin/CreateAdmin")]
     public async Task<IActionResult> CreationAdmin(
         [FromBody] RegisterViewModel model,
@@ -156,6 +158,57 @@ public class AdminController : ControllerBase
         {
             Console.WriteLine(e);
             return StatusCode(400, new ResultViewModel<string>("00x00 - Internal Server Error."));
+        }
+    }
+    
+    // @desc: Route to remove admins from the system
+    [HttpDelete("v1/Admin/DeleteAdmin/{id}")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> DeleteAdmin(
+        [FromRoute] int id,
+        [FromServices] AccessControlContext context,
+        [FromServices] IHttpContextAccessor httpContextAccessor)
+    {
+        // Get the authenticated user's email from the JWT token. 
+        var authenticatedUserEmail = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+        
+        if (string.IsNullOrEmpty(authenticatedUserEmail))
+            return Unauthorized(new ResultViewModel<string>("User not authenticated."));
+
+        // Get the IsRoot claim from token JWT
+        var isRootClaim = httpContextAccessor.HttpContext.User.FindFirst("IsRoot")?.Value;
+        bool isRoot = bool.TryParse(isRootClaim, out var result) && result;
+
+        if (!isRoot)
+            return Unauthorized(new ResultViewModel<string>("Only the root admin can delete other admins."));
+        
+        try
+        {
+            // searching the Admin by ID
+            var admin = await context
+                .Admins
+                .FirstOrDefaultAsync(a => a.Id == id);
+            
+            if(admin == null)
+                return BadRequest(new ResultViewModel<string>($"Admin {id} not found."));
+            
+            // Prevent the admin root from deleting himself
+            if (admin.IsRoot)
+                return BadRequest(new ResultViewModel<string>("The root admin cannot be deleted."));
+            
+            context.Admins.Remove(admin);
+            await context.SaveChangesAsync();
+            
+            return Ok(new ResultViewModel<string>($"Admin {id} deleted successfully.", null));
+        }
+        catch (DbUpdateException ex)
+        {
+            Console.WriteLine(ex.InnerException?.Message);
+            return StatusCode(400, new ResultViewModel<string>("00x10 - Database Update Error."));
+        }
+        catch
+        {
+            return BadRequest(new ResultViewModel<string>("00x00 - Internal Server Error."));
         }
     }
     
