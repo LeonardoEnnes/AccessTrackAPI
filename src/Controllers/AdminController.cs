@@ -94,7 +94,8 @@ public class AdminController : ControllerBase
             Email = model.Email,
             PasswordHash = passwordHash,
             Name = model.Name,
-            Role = "admin"
+            Role = "admin",
+            IsRoot = true
         };
 
         try
