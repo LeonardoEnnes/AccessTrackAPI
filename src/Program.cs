@@ -6,49 +6,23 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-// adjust the program later 
-
 var builder = WebApplication.CreateBuilder(args);
-
-// Configure DbContext with the connection string from configuration
-builder.Services.AddDbContext<AccessControlContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+LoadConfiguration(builder);
+ConfigureAuthentication(builder);
+ConfigureServices(builder);
+ConfigureMvc(builder);
 
 // Add services for controllers
-builder.Services.AddControllers();
 builder.Services.AddOpenApi(); // Swagger (later)
 
-// Registre o TokenService
-builder.Services.AddTransient<TokenService>(); 
-
-// Load the JWT key from configuration
-Configuration.JwtKey = builder.Configuration["JwtKey"];
-
-// Configuração da autenticação JWT
-var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);
-builder.Services.AddAuthentication(x =>
-{
-    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(x =>
-{
-    x.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = false,
-        ValidateAudience = false
-    };
-});
-
-// Registrar IHttpContextAccessor
+// register IHttpContextAccessor
 builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.MapControllers();
+// app.UseHttpsRedirection();
+
 if (app.Environment.IsDevelopment())
 {
     builder.Configuration.AddUserSecrets<Program>();
@@ -56,9 +30,47 @@ if (app.Environment.IsDevelopment())
     // app.MapOpenApi();
 }
 
-// Map controller routes
-app.MapControllers();
-
-// app.UseHttpsRedirection();
-
+Console.Clear();
 app.Run();
+
+void ConfigureMvc(WebApplicationBuilder builder)
+{
+    builder.Services.AddMemoryCache(); // add memory cache support
+    builder.Services.AddControllers();
+}
+
+void LoadConfiguration(WebApplicationBuilder  builder)
+{
+    // Load the JWT key from configuration
+    Configuration.JwtKey = builder.Configuration["JwtKey"];
+}
+
+void ConfigureAuthentication(WebApplicationBuilder builder)
+{
+    // JWT Auth config
+    var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);
+    builder.Services.AddAuthentication(x =>
+    {
+        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    }).AddJwtBearer(x =>
+    {
+        x.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
+}
+
+void ConfigureServices(WebApplicationBuilder builder)
+{
+    // Configure DbContext with the connection string configuration
+    builder.Services.AddDbContext<AccessControlContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    
+    // Register the TokenService
+    builder.Services.AddTransient<TokenService>(); 
+}
