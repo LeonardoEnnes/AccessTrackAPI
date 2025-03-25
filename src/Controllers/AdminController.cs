@@ -16,8 +16,8 @@ namespace AccessTrackAPI.Controllers;
 [ApiController]
 public class AdminController : ControllerBase
 {
-    // put an admin auth here later
     [HttpPost("v1/Admin/CreateAdmin")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> CreationAdmin(
         [FromBody] RegisterViewModel model,
         [FromServices] AccessControlContext context)
