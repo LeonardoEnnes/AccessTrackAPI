@@ -23,7 +23,7 @@ public class AdminController : ControllerBase
         [FromServices] AccessControlContext context)
     {
         if (model == null)
-            return BadRequest(new ResultViewModel<string>("Admin data required."));
+            return BadRequest(new ResultViewModel<string>("40x00 - Admin data required."));
 
         // verify is there's an admin with the same email in the Database
         var existingAdmin = await context
@@ -77,7 +77,7 @@ public class AdminController : ControllerBase
         [FromServices] AccessControlContext context)
     {
         if (model == null)
-            return BadRequest(new ResultViewModel<string>("Admin data required."));
+            return BadRequest(new ResultViewModel<string>("40x00 - Admin data required."));
         
         // verify if an admin already exists in the database
         var anyAdmin = await context.

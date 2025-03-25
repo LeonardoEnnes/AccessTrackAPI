@@ -23,7 +23,7 @@ public class UsersController : ControllerBase
     {
 
         if (model == null)
-            return BadRequest("User data is required.");
+            return BadRequest("40x00 - User data is required.");
         
         var passwordHash = PasswordHasher.Hash(model.Password);
         
@@ -66,7 +66,7 @@ public class UsersController : ControllerBase
         [FromServices] TokenService tokenService)
     {
         if(!ModelState.IsValid)
-            return BadRequest(new ResultViewModel<string>("00x00 - Internal Server Error."));
+            return BadRequest(new ResultViewModel<string>("40x00 - Invalid request data."));
         
         var user = await context
             .Users
