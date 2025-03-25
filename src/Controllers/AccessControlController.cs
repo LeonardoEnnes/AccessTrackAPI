@@ -18,17 +18,14 @@ public class AccessControlController : ControllerBase
         )
     {
         if(!ModelState.IsValid)
-            return BadRequest(new ResultViewModel<string>("00x00 - Internal Server Error."));
+            return BadRequest(new ResultViewModel<string>("Invalid request data."));
         
         var users = await context.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Email == model.Email);
-
-        if (users == null)
-            return BadRequest(new ResultViewModel<string>("username or password is incorrect."));
         
-        if (!PasswordHasher.Verify(users.PasswordHash, model.Password))
-            return BadRequest(new ResultViewModel<string>("username or password is incorrect."));
+        if (users == null || !PasswordHasher.Verify(users.PasswordHash, model.Password))
+            return BadRequest(new ResultViewModel<string>("Invalid credentials.")); 
 
         try
         {
@@ -45,9 +42,9 @@ public class AccessControlController : ControllerBase
 
             return Ok(new ResultViewModel<dynamic>(new
                 {
-                    User = users.Email,
+                    message = "Access granted successfully!",
+                    User = users.Name,
                     entryTime = entryLog.EntryTime,
-                    message = "Entry logged successfully."
                 }));
         }
         catch (DbUpdateException ex)
@@ -57,7 +54,7 @@ public class AccessControlController : ControllerBase
         }
         catch
         {
-            return StatusCode(400, new ResultViewModel<string>("00x00 - internal server error."));
+            return StatusCode(500, new ResultViewModel<string>("00x00 - internal server error."));
         }
     }
 }
