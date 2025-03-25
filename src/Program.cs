@@ -48,12 +48,6 @@ builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-// checking the keys (remove later)
-Console.WriteLine($"JWT Key: {Configuration.JwtKey}");
-Console.WriteLine($"Connection String: {connectionString}");
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
