@@ -14,9 +14,6 @@ public class EntryExitLogMapping : IEntityTypeConfiguration<EntryExitLogs>
         builder.Property(e => e.EntryTime)
             .IsRequired();
         
-        builder.Property(e => e.ExitTime)
-            .IsRequired(false); // ExiteTime is optional, an user can be in the building yet
-        
         // Relationships
         builder.HasOne(e => e.User)
             .WithMany(u => u.EntryExitLogs)

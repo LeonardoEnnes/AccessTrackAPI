@@ -313,7 +313,6 @@ public class AdminController : ControllerBase
             var logs = await query.Select(log => new EntryExitLogsDto
             {
                 Id = log.Id,
-                ExitTime = log.ExitTime,
                 EntryTime = log.EntryTime,
                 UserId = log.UserId,
                 UserName = log.User.Name

@@ -133,7 +133,6 @@ public class UsersController : ControllerBase
                 {
                     Id = log.Id,
                     EntryTime = log.EntryTime,
-                    ExitTime = log.ExitTime,
                     UserId = log.UserId,
                     UserName = user.Name // Username associated to the log
                 })
