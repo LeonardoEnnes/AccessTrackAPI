@@ -55,7 +55,6 @@ public class AdminController : ControllerBase
             return Ok(new ResultViewModel<dynamic>(new
             {
                 admin = newAdmin,
-                password = model.Password,  // Return the user-provided password (just for now)
                 message = "Admin created successfully."
             }));
 
@@ -108,7 +107,6 @@ public class AdminController : ControllerBase
             return Ok(new ResultViewModel<dynamic>( new
             {
                 admin = newAdmin,
-                password = model.Password, // remove this latter 
                 message = "Admin created successfully."
             }));
         }

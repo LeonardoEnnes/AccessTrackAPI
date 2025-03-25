@@ -44,7 +44,6 @@ public class UsersController : ControllerBase
             return Ok(new ResultViewModel<dynamic>(new
             {
                 user = newUser.Email,
-                password = model.Password, // Return the user-provided password (just for now)
                 message = "Account created successfully."
             }));
         }
