@@ -43,8 +43,8 @@ public class UsersController : ControllerBase
 
             return Ok(new ResultViewModel<dynamic>(new
             {
-                user = newUser.Email,
-                message = "Account created successfully."
+                message = "Account created successfully.",
+                user = newUser.Email
             }));
         }
         catch (DbUpdateException ex)
@@ -54,7 +54,7 @@ public class UsersController : ControllerBase
         }
         catch
         {
-            return StatusCode(400, new ResultViewModel<string>("00x00 - Internal Server Error."));
+            return StatusCode(500, new ResultViewModel<string>("00x00 - Internal Server Error."));
         }
     }
 
@@ -86,12 +86,17 @@ public class UsersController : ControllerBase
             
             var token = tokenService.GenerateToken(claims);
             // here show a list of entry/exit logs 
-            return Ok(new ResultViewModel<string>(token, null)); // Null is required 
+            return Ok(new ResultViewModel<dynamic>(
+                new
+                {
+                    message = "Login successful.",
+                    token
+                }, null)); // Null is required 
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return StatusCode(400, new ResultViewModel<string>("00x00 - Internal Server Error."));
+            return StatusCode(500, new ResultViewModel<string>("00x00 - Internal Server Error."));
         }
     }
     
@@ -109,8 +114,6 @@ public class UsersController : ControllerBase
             return BadRequest(new ResultViewModel<string>("User not found."));
         }
 
-        Console.WriteLine($"Email from token: {userEmail}");
-        
         try
         {
             // Searching for the users and logs in the database in system
@@ -145,12 +148,16 @@ public class UsersController : ControllerBase
                 Logs = logsDto
             };
             
-            return Ok(new ResultViewModel<object>(userInfo));
+            return Ok(new ResultViewModel<object>(new
+            {
+                message = "User info retrieved successfully.",
+                userInfo
+            }, null));
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return StatusCode(400, new ResultViewModel<string>("00x00 - Internal Server Error."));
+            return StatusCode(500, new ResultViewModel<string>("00x00 - Internal Server Error."));
         }
     }
     
