@@ -16,8 +16,8 @@ namespace AccessTrackAPI.Controllers;
 [ApiController]
 public class UsersController : ControllerBase
 {
-    [HttpPost("v1/Users/")]
-    public async Task<ActionResult> Post(
+    [HttpPost("v1/Users/CreateUser")]
+    public async Task<ActionResult> CreateUser(
         [FromBody] RegisterViewModel model,
         [FromServices] AccessControlContext context)
     {
@@ -61,7 +61,7 @@ public class UsersController : ControllerBase
 
     // @desc: Login is responsible to enter in the system  
     [HttpPost("v1/Users/login")]
-    public async Task<ActionResult> Login(
+    public async Task<ActionResult> LoginUser(
         [FromBody] LoginViewModel model,
         [FromServices] AccessControlContext context,
         [FromServices] TokenService tokenService)
