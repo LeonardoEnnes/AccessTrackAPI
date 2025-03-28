@@ -23,7 +23,7 @@ public class AdminController : ControllerBase
         [FromServices] AccessControlContext context)
     {
         if (model == null)
-            return BadRequest(new ResultViewModel<string>("40x00 - Admin data required."));
+            return BadRequest(new ResultViewModel<string>("Invalid request data"));
 
         // verify is there's an admin with the same email in the Database
         var existingAdmin = await context
@@ -32,7 +32,7 @@ public class AdminController : ControllerBase
             .FirstOrDefaultAsync(a => a.Email == model.Email);
 
         if (existingAdmin != null)
-            return BadRequest(new ResultViewModel<string>("Email already exists."));
+            return BadRequest(new ResultViewModel<string>("Registration failed."));
 
         // password hash
         var passwordHash = PasswordHasher.Hash(model.Password);
@@ -43,21 +43,16 @@ public class AdminController : ControllerBase
             Email = model.Email,
             PasswordHash = passwordHash,
             Name = model.Name,
-            Role = "admin" // role set as adm (for now)
+            Role = "admin" 
         };
 
         try
         {
-            // add adm to the db
+            // add adm to the database
             await context.Admins.AddAsync(newAdmin);
             await context.SaveChangesAsync();
 
-            return Ok(new ResultViewModel<dynamic>(new
-            {
-                admin = newAdmin,
-                message = "Admin created successfully."
-            }));
-
+            return Ok(new ResultViewModel<string>("Admin created successfully", null));
         }
         catch (DbUpdateException ex)
         {
@@ -66,7 +61,7 @@ public class AdminController : ControllerBase
         }
         catch
         {
-            return BadRequest(new ResultViewModel<string>("00x00 - internal server error."));
+            return StatusCode(500, new ResultViewModel<string>("00x00 - internal server error.\"d"));
         }
     }
     
@@ -77,7 +72,7 @@ public class AdminController : ControllerBase
         [FromServices] AccessControlContext context)
     {
         if (model == null)
-            return BadRequest(new ResultViewModel<string>("40x00 - Admin data required."));
+            return BadRequest(new ResultViewModel<string>("Admin data required."));
         
         // verify if an admin already exists in the database
         var anyAdmin = await context.
@@ -129,7 +124,7 @@ public class AdminController : ControllerBase
         [FromServices] TokenService tokenService)
     {
         if(!ModelState.IsValid)
-            return BadRequest(new ResultViewModel<string>("00x00 - Internal Server Error."));
+            return BadRequest(new ResultViewModel<string>("Invalid request data."));
         
         // Searching the admin in the system
         var admin = await context
@@ -137,12 +132,11 @@ public class AdminController : ControllerBase
             .AsNoTracking()
             .FirstOrDefaultAsync(a => a.Email == model.Email);
 
-        if (admin == null)
-            return BadRequest(new ResultViewModel<string>("Email or password is incorrect."));
-
-        if (!PasswordHasher.Verify(admin.PasswordHash, model.Password))
-            return BadRequest(new ResultViewModel<string>("Email or password is incorrect."));
-
+        if (admin == null || !PasswordHasher.Verify(admin.PasswordHash, model.Password))
+        {
+            return BadRequest(new ResultViewModel<string>("Username or password is incorrect."));
+        }
+        
         try
         {
             // Generate admin claim
@@ -241,7 +235,7 @@ public class AdminController : ControllerBase
         }
         catch
         {
-            return StatusCode(500, new ResultViewModel<string>("00x01 - Internal server error."));
+            return StatusCode(500, new ResultViewModel<string>("00x00 - Internal server error."));
         }
     }
     
@@ -282,7 +276,7 @@ public class AdminController : ControllerBase
         catch (DbUpdateException ex)
         {
             Console.WriteLine(ex.InnerException?.Message);
-            return StatusCode(400, new ResultViewModel<string>("00x10 - DatabseUpdate Error."));
+            return StatusCode(400, new ResultViewModel<string>("00x10 - Database Update Error."));
         }
         catch
         {
