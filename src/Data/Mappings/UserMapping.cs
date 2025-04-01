@@ -22,7 +22,7 @@ public class UserMapping : IEntityTypeConfiguration<Users>
         builder.Property(u => u.Role) // role required? (see later)
             .HasMaxLength(50);
         
-        // Configuração da PasswordHash
+        // PasswordHash configurations
         builder.Property(u => u.PasswordHash)
             .IsRequired()
             .HasColumnName("PasswordHash")
@@ -32,6 +32,11 @@ public class UserMapping : IEntityTypeConfiguration<Users>
         // Indexes
         builder.HasIndex(u => u.Email)
             .IsUnique(); // Ensure the email is unique
+        
+        // Telephone Numbers
+        builder.Property(u => u.TelephoneNumber)
+            .IsRequired()
+            .HasMaxLength(20);
         
         // Relationships
         builder.HasMany(u => u.EntryExitLogs)
