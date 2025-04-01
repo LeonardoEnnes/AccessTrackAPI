@@ -30,7 +30,7 @@ public class AccessControlController : ControllerBase
         try
         {
             // logging the entry
-            var entryLog = new EntryExitLogs
+            var entryLog = new EntryLogs
             {
                 UserId = users.Id,
                 EntryTime = DateTime.UtcNow

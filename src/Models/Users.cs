@@ -10,5 +10,5 @@ public class Users
     public string TelephoneNumber { get; set; }
     
     [System.Text.Json.Serialization.JsonIgnore]
-    public ICollection<EntryExitLogs> EntryExitLogs { get; set; } = new List<EntryExitLogs>();  
+    public ICollection<EntryLogs> EntryExitLogs { get; set; } = new List<EntryLogs>();  
 }

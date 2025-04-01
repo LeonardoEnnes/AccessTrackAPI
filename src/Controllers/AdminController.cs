@@ -293,7 +293,7 @@ public class AdminController : ControllerBase
     {
         try
         {
-            IQueryable<EntryExitLogs> query = context
+            IQueryable<EntryLogs> query = context
                 .EntryExitLogs
                 .AsNoTracking()
                 .Include(log => log.User);

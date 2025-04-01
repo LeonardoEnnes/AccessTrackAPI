@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AccessTrackAPI.Data.Mappings;
 
-public class EntryExitLogMapping : IEntityTypeConfiguration<EntryExitLogs>
+public class EntryExitLogMapping : IEntityTypeConfiguration<EntryLogs>
 {
-    public void Configure(EntityTypeBuilder<EntryExitLogs> builder)
+    public void Configure(EntityTypeBuilder<EntryLogs> builder)
     {
         builder.HasKey(e => e.Id);
         

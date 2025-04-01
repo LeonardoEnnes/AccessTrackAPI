@@ -1,6 +1,6 @@
 namespace AccessTrackAPI.Models;
 
-public class EntryExitLogs
+public class EntryLogs
 {
     public int Id { get; set; }
     public DateTime EntryTime { get; set; }

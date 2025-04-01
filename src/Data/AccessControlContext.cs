@@ -11,7 +11,7 @@ public class AccessControlContext : DbContext
     { }
 
     public DbSet<Users> Users { get; set; }
-    public DbSet<EntryExitLogs> EntryExitLogs { get; set; }
+    public DbSet<EntryLogs> EntryExitLogs { get; set; }
     
     public DbSet<Admins> Admins { get; set; }
 
