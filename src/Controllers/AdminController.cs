@@ -43,6 +43,7 @@ public class AdminController : ControllerBase
             Email = model.Email,
             PasswordHash = passwordHash,
             Name = model.Name,
+            TelephoneNumber = model.TelephoneNumber,
             Role = "admin" 
         };
 
@@ -91,6 +92,7 @@ public class AdminController : ControllerBase
             PasswordHash = passwordHash,
             Name = model.Name,
             Role = "admin",
+            TelephoneNumber = model.TelephoneNumber,
             IsRoot = true
         };
 
