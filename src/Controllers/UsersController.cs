@@ -139,7 +139,7 @@ public class UsersController : ControllerBase
             
             // Mapping logs to the DTO
             var logsDto = user.EntryExitLogs
-                .Select(log => new EntryExitLogsDto
+                .Select(log => new EntryLogsDto
                 {
                     Id = log.Id,
                     EntryTime = log.EntryTime,

@@ -302,7 +302,7 @@ public class AdminController : ControllerBase
                 query = query.Where(log => log.UserId == userId); // fetching logs for a specific user
 
 
-            var logs = await query.Select(log => new EntryExitLogsDto
+            var logs = await query.Select(log => new EntryLogsDto
             {
                 Id = log.Id,
                 EntryTime = log.EntryTime,
@@ -313,7 +313,7 @@ public class AdminController : ControllerBase
             if (logs == null || !logs.Any())
                 return NotFound(new ResultViewModel<string>("No logs found."));
             
-            return Ok(new ResultViewModel<List<EntryExitLogsDto>>(logs));
+            return Ok(new ResultViewModel<List<EntryLogsDto>>(logs));
         }
         catch (Exception ex)
         {
