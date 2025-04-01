@@ -22,7 +22,7 @@ public class AdminMapping : IEntityTypeConfiguration<Admins>
         builder.Property(a => a.Role) // role required? (see later)
             .HasMaxLength(50);
         
-        // Configuração da PasswordHash
+        // PasswordHash configuration
         builder.Property(a => a.PasswordHash)
             .IsRequired()
             .HasColumnName("PasswordHash")
@@ -32,6 +32,11 @@ public class AdminMapping : IEntityTypeConfiguration<Admins>
         builder.Property(a => a.IsRoot)
             .IsRequired()
             .HasDefaultValue(false);
+        
+        // Telephone Numbers
+        builder.Property(a => a.TelephoneNumber)
+            .IsRequired()
+            .HasMaxLength(20);
         
         // Indexes
         builder.HasIndex(a => a.Email)
