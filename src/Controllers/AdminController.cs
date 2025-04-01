@@ -34,6 +34,12 @@ public class AdminController : ControllerBase
         if (existingAdmin != null)
             return BadRequest(new ResultViewModel<string>("Registration failed."));
 
+        var phoneNumberExists = await context.Users
+            .AnyAsync(u => u.TelephoneNumber == model.TelephoneNumber);
+        
+        if (phoneNumberExists)
+            return BadRequest(new ResultViewModel<string>("Telephone number already exists"));
+        
         // password hash
         var passwordHash = PasswordHasher.Hash(model.Password);
 
