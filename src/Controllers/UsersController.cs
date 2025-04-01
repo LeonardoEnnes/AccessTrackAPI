@@ -25,6 +25,13 @@ public class UsersController : ControllerBase
         if (model == null)
             return BadRequest("40x00 - User data is required.");
         
+        // Checking if the telephone number is in database
+        var phoneNumberExists = await context.Users
+            .AnyAsync(u => u.TelephoneNumber == model.TelephoneNumber);
+        
+        if (phoneNumberExists)
+            return BadRequest(new ResultViewModel<string>("Telephone number already exists"));
+        
         var passwordHash = PasswordHasher.Hash(model.Password);
         
         var newUser = new Users
