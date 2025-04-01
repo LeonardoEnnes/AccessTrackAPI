@@ -261,6 +261,7 @@ public class AdminController : ControllerBase
             // Update user properties
             user.Name = model.Name;
             user.Email = model.Email;
+            user.TelephoneNumber = model.TelephoneNumber;
             
             // Hash the new password if provided
             if (!string.IsNullOrEmpty(model.Password))
