@@ -18,7 +18,7 @@ public class AccessControlContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UserMapping());
-        modelBuilder.ApplyConfiguration(new EntryExitLogMapping());
+        modelBuilder.ApplyConfiguration(new EntryLogMapping());
         modelBuilder.ApplyConfiguration(new AdminMapping());
     }
 }
