@@ -32,7 +32,8 @@ public class UsersController : ControllerBase
             Name = model.Name,
             Email = model.Email,
             PasswordHash = passwordHash,
-            Role = "user"
+            Role = "user",
+            TelephoneNumber = model.TelephoneNumber
         };
 
         try

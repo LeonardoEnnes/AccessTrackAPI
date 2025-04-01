@@ -16,4 +16,10 @@ public class RegisterViewModel
     [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$", 
         ErrorMessage = "Password must contain at least one uppercase, one lowercase, one number, and one special character")]
     public string Password { get; set; }
+    
+    [Required(ErrorMessage = "Telephone number is required")]
+    [Phone(ErrorMessage = "Telephone number is invalid")]
+    [RegularExpression(@"^(\+?\d{1,3}[- ]?)?\d{10}$", 
+        ErrorMessage = "Phone number must be 10 digits")]
+    public string TelephoneNumber { get; set; }
 }
