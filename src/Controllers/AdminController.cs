@@ -330,4 +330,53 @@ public class AdminController : ControllerBase
             return StatusCode(500, new ResultViewModel<string>("00x00 - Internal Server Error."));
         }
     }
+    
+    // @desc: Get logs/info of visitors 
+    [HttpGet("v1/Admin/VisitorLogs/{visitorId?}")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> GetVisitorLogs(
+        [FromRoute] int? visitorId,
+        [FromServices] AccessControlContext context)
+    {
+        try
+        {
+            IQueryable<EntryLogs> query = context
+                .EntryExitLogs
+                .AsNoTracking()
+                .Include(log => log.Visitor);
+
+            if (visitorId.HasValue)
+            {
+                // Fetch logs for a specific visitor
+                query = query.Where(log => log.VisitorId == visitorId);
+            
+                // Check if visitor exists
+                var visitorExists = await context.Visitor.AnyAsync(v => v.Id == visitorId.Value);
+                if (!visitorExists)
+                    return NotFound(new ResultViewModel<string>("Visitor not found."));
+            }
+
+            var logs = await query.Select(log => new 
+            {
+                id = log.Id,
+                entryTime = log.EntryTime,
+                visitorId = log.VisitorId,
+                VisitorName = log.Visitor.Name,
+                VisitorEmail = log.Visitor.Email,
+                purpose = log.Visitor.Purpose,
+                createdByAdmin = log.Visitor.CreatedByAdmin,
+                createdAt = log.Visitor.CreatedAt
+            }).ToListAsync();
+
+            if (logs == null || !logs.Any())
+                return NotFound(new ResultViewModel<string>("No logs found for visitors."));
+
+            return Ok(new ResultViewModel<dynamic>(logs));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return StatusCode(500, new ResultViewModel<string>("00x00 - Internal Server Error."));
+        }
+    }
 }
