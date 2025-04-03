@@ -17,44 +17,77 @@ public class AccessControlController : ControllerBase
         [FromServices] AccessControlContext context
         )
     {
-        if(!ModelState.IsValid)
+         if (!ModelState.IsValid)
             return BadRequest(new ResultViewModel<string>("Invalid request data."));
-        
-        var users = await context.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Email == model.Email);
-        
-        if (users == null || !PasswordHasher.Verify(users.PasswordHash, model.Password))
-            return BadRequest(new ResultViewModel<string>("Invalid credentials.")); 
+         
+         try
+         {
+             // First, try to find it as a regular user
+             var user = await context.Users
+                 .AsNoTracking()
+                 .FirstOrDefaultAsync(u => u.Email == model.Email);
 
-        try
-        {
-            // logging the entry
-            var entryLog = new EntryLogs
-            {
-                UserId = users.Id,
-                EntryTime = DateTime.UtcNow
-            };
-            
-            // add the entry logs to the database
-            await context.EntryExitLogs.AddAsync(entryLog);
-            await context.SaveChangesAsync();
+             if (user != null && PasswordHasher.Verify(user.PasswordHash, model.Password))
+             {
+                 // regular user entry log
+                 var entryLog = new EntryLogs
+                 {
+                     UserId = user.Id,
+                     EntryTime = DateTime.UtcNow
+                 };
 
-            return Ok(new ResultViewModel<dynamic>(new
-                {
-                    message = "Access granted successfully!",
-                    User = users.Name,
-                    entryTime = entryLog.EntryTime,
-                }));
-        }
-        catch (DbUpdateException ex)
-        {
-            Console.WriteLine(ex.InnerException?.Message);
-            return StatusCode(400, new ResultViewModel<string>("00x10 - Database Update Error."));
-        }
-        catch
-        {
-            return StatusCode(500, new ResultViewModel<string>("00x00 - internal server error."));
-        }
+                 await context.EntryExitLogs.AddAsync(entryLog);
+                 await context.SaveChangesAsync();
+
+                 return Ok(new ResultViewModel<dynamic>(new
+                 {
+                     message = "User access granted successfully!",
+                     nme = user.Name,
+                     role = user.Role,
+                     entryTime = entryLog.EntryTime,
+                     email = user.Email
+                 }));
+             }
+
+             // If user was not found, then it's a visitor 
+             var visitor = await context.Visitor
+                 .AsNoTracking()
+                 .FirstOrDefaultAsync(v => v.Email == model.Email);
+
+             if (visitor != null)
+             {
+                 if (!string.IsNullOrEmpty(visitor.PasswordHash) && !PasswordHasher.Verify(visitor.PasswordHash, model.Password))
+                    return BadRequest(new ResultViewModel<string>("Invalid credentials."));
+
+                 // visitor log entry
+                 var entryLog = new EntryLogs
+                 {
+                     VisitorId = visitor.Id,
+                     EntryTime = DateTime.UtcNow
+                 };
+
+                 await context.EntryExitLogs.AddAsync(entryLog);
+                 await context.SaveChangesAsync();
+
+                 return Ok(new ResultViewModel<dynamic>(new
+                 {
+                     message = "Visitor access granted successfully!",
+                     name = visitor.Name,
+                     role = visitor.Role,
+                     entryTime = entryLog.EntryTime,
+                     email = visitor.Email
+                 })); 
+             }
+             return BadRequest(new ResultViewModel<string>("Invalid credentials."));
+         }
+         catch (DbUpdateException ex)
+         {
+             Console.WriteLine(ex.InnerException?.Message);
+             return StatusCode(400, new ResultViewModel<string>("00x10 - Database Update Error."));
+         }
+         catch
+         {
+             return StatusCode(500, new ResultViewModel<string>("00x00 - internal server error."));
+         }
     }
 }
