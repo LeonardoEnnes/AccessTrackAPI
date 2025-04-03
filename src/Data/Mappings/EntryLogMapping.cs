@@ -18,6 +18,7 @@ public class EntryLogMapping : IEntityTypeConfiguration<EntryLogs>
         builder.HasOne(e => e.User)
             .WithMany(u => u.EntryExitLogs)
             .HasForeignKey(e => e.UserId)
+            .IsRequired(false) // ← Permite NULL
             .OnDelete(DeleteBehavior.Cascade); // An EntryExitLog belongs to one User
         
         builder.HasOne(e => e.Visitor)
