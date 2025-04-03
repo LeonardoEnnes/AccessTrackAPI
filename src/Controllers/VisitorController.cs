@@ -6,10 +6,9 @@ using AccessTrackAPI.ViewModels.Accounts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SecureIdentity.Password;
 
 namespace AccessTrackAPI.Controllers;
-
-// criar um VisitorRegisterViewModels/ CreateVisitorViewModel para alocar a regra de neg do visitante, não interferindo com as outras classes 
 
 public class VisitorController : ControllerBase
 {
@@ -33,8 +32,11 @@ public class VisitorController : ControllerBase
             
             // getting the admin email from the claim type
             var adminEmail = User.FindFirst(ClaimTypes.Name)?.Value;
+            
             if(string.IsNullOrEmpty(adminEmail))
                 return BadRequest(new ResultViewModel<string>("Unable to find admin email from token"));
+            
+            var passwordHash = PasswordHasher.Hash(model.Password);
             
             // creating the visitor
             var visitor = new Visitor
@@ -42,7 +44,8 @@ public class VisitorController : ControllerBase
                 Name = model.Name,
                 Email = model.Email,
                 TelephoneNumber = model.TelephoneNumber,
-                CreatedByAdmin = adminEmail, // Assuming admin ID is stored in the token
+                CreatedByAdmin = adminEmail, 
+                PasswordHash = passwordHash,
                 Purpose = model.Purpose,
                 Role = "visitor"
             };

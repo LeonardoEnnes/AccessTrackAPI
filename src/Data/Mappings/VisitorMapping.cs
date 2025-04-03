@@ -19,6 +19,13 @@ public class VisitorMapping : IEntityTypeConfiguration<Visitor>
             .IsRequired()
             .HasMaxLength(100);
         
+        // PasswordHash configurations
+        builder.Property(u => u.PasswordHash)
+            .IsRequired()
+            .HasColumnName("PasswordHash")
+            .HasColumnType("VARCHAR")
+            .HasMaxLength(255);
+        
         builder.Property(v => v.TelephoneNumber)
             .IsRequired()
             .HasMaxLength(50);

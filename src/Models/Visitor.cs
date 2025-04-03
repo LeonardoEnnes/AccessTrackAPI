@@ -10,6 +10,7 @@ public class Visitor
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string CreatedByAdmin { get; set; } 
     public string Role { get; set; } = "visitor";
+    public string PasswordHash { get; set; }
     
     [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<EntryLogs> EntryExitLogs { get; set; } = new List<EntryLogs>();
