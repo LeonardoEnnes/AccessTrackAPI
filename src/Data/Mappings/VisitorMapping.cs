@@ -11,6 +11,10 @@ public class VisitorMapping : IEntityTypeConfiguration<Visitor>
         builder.HasKey(v => v.Id);
         
         // Properties
+        builder.Property(u => u.Name)
+            .IsRequired()
+            .HasMaxLength(100);
+        
         builder.Property(v => v.Email)
             .IsRequired()
             .HasMaxLength(100);
@@ -24,7 +28,8 @@ public class VisitorMapping : IEntityTypeConfiguration<Visitor>
             .HasMaxLength(500); // maybe increase later
 
         builder.Property(v => v.CreatedByAdmin)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(100);
         
         builder.Property(v => v.Role)
             .HasMaxLength(50);
