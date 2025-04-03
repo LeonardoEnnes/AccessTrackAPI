@@ -13,6 +13,7 @@ namespace AccessTrackAPI.Controllers;
 
 public class VisitorController : ControllerBase
 {
+    // @desc: Route to create visitors
     [HttpPost("v1/visitors/CreateVisitor")]
     [Authorize(Roles = "admin")]
     public async Task<ActionResult> CreateVisitor(
@@ -63,9 +64,43 @@ public class VisitorController : ControllerBase
             Console.WriteLine(ex.InnerException?.Message);
             return StatusCode(400, new ResultViewModel<string>("01x00 - Email already in use."));
         }
-        catch(Exception ex)
+        catch
         {
-            Console.WriteLine(ex.Message);
+            return StatusCode(500, new ResultViewModel<string>("00x00 - Internal Server Error."));
+        }
+    }
+    
+    // @desc: Route to remove visitors from the system 
+    [HttpDelete("v1/visitors/DeleteVisitor/{id}")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> DeleteVisitor(
+        [FromRoute] int id,
+        [FromServices] AccessControlContext context)
+    {
+        try
+        {
+            // Searching the visitor
+            var visitor = await context
+                .Visitor
+                .AsNoTracking()
+                .FirstOrDefaultAsync(v => v.Id == id);
+            
+            if(visitor == null)
+                return BadRequest(new ResultViewModel<string>("Visitor not found"));
+            
+            // Removing the visitor
+            context.Visitor.Remove(visitor);
+            await context.SaveChangesAsync();
+            
+            return Ok(new ResultViewModel<dynamic>($"Visitor {id} deleted successfully"));
+        }
+        catch (DbUpdateException ex)
+        {
+            Console.WriteLine(ex.InnerException?.Message);
+            return StatusCode(400, new ResultViewModel<string>("00x10 - Database Update Error."));
+        }
+        catch
+        {
             return StatusCode(500, new ResultViewModel<string>("00x00 - Internal Server Error."));
         }
     }
