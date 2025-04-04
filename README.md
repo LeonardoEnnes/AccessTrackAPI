@@ -21,7 +21,6 @@ A secure access control system API for managing user authentication, authorizati
 - User/visitor management (CRUD operations)
 - Access log viewing and reporting
 
----
 ## API Endpoints
 
 ### 🔑 Authentication & Security
@@ -53,15 +52,61 @@ This API uses JWT authentication. To access protected routes, obtain a token via
 
 ### User Operations
 - `GET /v1/Users/infos` - Get user information and access logs
----
+
 ##  📦 Installation & Setup
 ### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) (v20.10+)
+- [.NET SDK 9.0](https://dotnet.microsoft.com/download)
+- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (optional - included in Docker setup)
 
 1. Clone this repository
 ```shell
     git clone https://github.com/LeonardoEnnes/AccessTrackAPI.git
     cd AccessTrackAPI
 ```
+2. Configure the enviroment variables:
+    - Copy the [.env.example](.env.example) file to `.env`
+   ```shell
+      cp .env.example .env
+    ```
+    - Open the .env file and update the following values:
+        - `DB_CONNECTION_STRING:` Your SQL Server connection string
+        - `JWT_KEY:` A secure secret key for JWT token generation
+
+
+3. Build and run the application using Docker:
+ ```shell
+    docker-compose up --build
+   ```
+
+4. The API should now be running at:
+   [http://localhost:5130](http://localhost:5130)
+
+### For Development (Without Docker): 
+- Feel free to improve my code as you see fit. 
+- If you have any questions regarding this project, Please feel free to email me.
+1. Restore Dependencies & Build
+```shell
+    dotnet restore
+    dotnet build
+```
+
+2. Configure User Secrets
+```shell
+  dotnet user-secrets
+  dotnet user-secrets set "ConnectionStrings:DefaultConnection" "your-string-connection"
+  dotnet user-secrets set "JwtKey" "your-jwt-key"
+```
+
+3. Apply Database Migrations
+````shell
+  dotnet ef database update
+````
+
+4. Run the Application
+````shell
+  dotnet run
+````
 
 ## 🛠️ Technologies Used
 - .NET (C#)
@@ -70,52 +115,8 @@ This API uses JWT authentication. To access protected routes, obtain a token via
 - Docker
 
 ## 📜 License
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE).
 
 ## 📧 Contact
 - **Author**: Leonardo Ennes
-- **Email**: leonardoennes@protonmail.com 
-
-
-
-
-
-
-
-
-
-
-
-
-
----
-## To ensure the API functions correctly, please follow these steps:
-
-### Initialize User Secrets
-```sh
-dotnet user-secrets init
-```
-
-### Set User Secrets
-Use the `dotnet user-secrets set` command to add your secrets. For example:
-
-```sh
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "YourConnectionStringHere"
-dotnet user-secrets set "JwtKey" "YourJwtKeyHere"
-```
-
-### List User Secrets
-To view all the stored User Secrets, use the following command:
-
-```sh
-dotnet user-secrets list
-```
-
-### Remove User Secrets
-To remove a specific secret, use the following command:
-
-```sh
-dotnet user-secrets remove "SecretName"
-```
-
-## Notes
+- **Email**: leonardoennes@protonmail.com
