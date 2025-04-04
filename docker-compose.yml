@@ -8,8 +8,5 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5130
-      - ConnectionStrings__DefaultConnection=Server=host.docker.internal,1433;Database=AccessTrackAPI;User ID=your_id_user;Password=your_password;TrustServerCertificate=True
-      - JwtKey=your_jwtKey
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${HOME}/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
+      - JwtKey=${JWT_KEY}
