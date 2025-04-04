@@ -114,6 +114,38 @@ This API uses JWT authentication. To access protected routes, obtain a token via
 - SQL Server 
 - Docker
 
+##  📂  Project Structure
+```text
+.
+├── Dependencies 
+├── Properties
+│   └── launchSettings.json 
+├── src 
+├── Controllers
+│   ├── AccessControlController.cs 
+│   ├── AdminController.cs 
+│   ├── UsersController.cs 
+│   └── VisitorController.cs 
+├── Data [COMPLETE]
+├── Extensions
+│   └── RoleClaimExtension.cs 
+├── Migrations [COMPLETE]
+├── Models
+│   ├── Admins.cs 
+│   ├── EntryLogs.cs 
+│   ├── Users.cs 
+│   └── Visitor.cs 
+├── Services
+│   └── TokenService.cs 
+├── ViewModels
+│   ├── Accounts 
+│   ├── DTOs 
+│   └── ResultViewModel.cs 
+├── AccessTrackAPI.http 
+├── Configuration.cs 
+└── Program.cs 
+````
+
 ## 📜 License
 This project is licensed under the [MIT License](LICENSE).
 
