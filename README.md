@@ -80,7 +80,7 @@ This API uses JWT authentication. To access protected routes, obtain a token via
    ```
 
 4. The API should now be running at:
-   [http://localhost:5130](http://localhost:5130)
+   [http://localhost:5130](http://localhost:5130/swagger) 
 
 ### For Development (Without Docker): 
 - Feel free to improve my code as you see fit. 
