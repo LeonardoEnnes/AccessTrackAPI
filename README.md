@@ -114,7 +114,7 @@ This API uses JWT authentication. To access protected routes, obtain a token via
 - SQL Server 
 - Docker
 
-##  📂  Project Structure
+##  📂 Project Structure
 ```text
 .
 ├── Dependencies 
@@ -126,10 +126,10 @@ This API uses JWT authentication. To access protected routes, obtain a token via
 │   ├── AdminController.cs 
 │   ├── UsersController.cs 
 │   └── VisitorController.cs 
-├── Data [COMPLETE]
+├── Data 
 ├── Extensions
 │   └── RoleClaimExtension.cs 
-├── Migrations [COMPLETE]
+├── Migrations 
 ├── Models
 │   ├── Admins.cs 
 │   ├── EntryLogs.cs 
