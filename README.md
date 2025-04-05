@@ -3,6 +3,19 @@
 ## 📌  Description
 A secure access control system API for managing user authentication, authorization, and entry logging in buildings or institutions.
 
+## 🔎 The problem this API solves
+Many facilities still rely on manual methods or outdated systems for access control, which can cause:
+- ❌ No reliable tracking of who enters or exits
+- ❌ Difficulty managing permission levels
+- ❌ Security vulnerabilities
+
+## 💡 The Solution I Developed:
+A robust and scalable API that delivers:
+- ✅ Secure authentication using JWT Tokens with role hierarchy (Admin, User, Visitor)
+- ✅ Detailed entry/exit logging with timestamps
+- ✅ Complete CRUD operations for user and visitor management
+- ✅ Administrative dashboard for log viewing and reporting
+
 ## 🚀 Features
 
 ### User Management
