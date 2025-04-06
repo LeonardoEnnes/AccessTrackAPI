@@ -66,6 +66,9 @@ This API uses JWT authentication. To access protected routes, obtain a token via
 ### User Operations
 - `GET /v1/Users/infos` - Get user information and access logs
 
+## Demo:
+<img src="./Img/swaggerImage.jpg" alt="swagger image" width="1200" height="500px" />
+
 ##  📦 Installation & Setup
 ### Prerequisites
 - [Docker Desktop](https://www.docker.com/products/docker-desktop) (v20.10+)
@@ -93,7 +96,7 @@ This API uses JWT authentication. To access protected routes, obtain a token via
    ```
 
 4. The API should now be running at:
-   [http://localhost:5130](http://localhost:5130/swagger) 
+   [http://localhost:5130/swagger](http://localhost:5130/swagger) 
 
 ### For Development (Without Docker): 
 - Feel free to improve my code as you see fit. 
